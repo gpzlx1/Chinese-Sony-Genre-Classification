@@ -49,7 +49,7 @@ def chineseornot(filename):
         if is_chinese(str3[i]):
             chinesecount = chinesecount + 1
         count = count + 1
-    if (chinesecount/count >= 0.9):
+    if (chinesecount/count >= 0.6):
         return True
     else:
         return False
