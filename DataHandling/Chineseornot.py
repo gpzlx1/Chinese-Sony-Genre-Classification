@@ -22,13 +22,14 @@ def is_chinese(char):
 
 def chineseornot(filename):
     work_dir = 'data/'
-    file_name = '{}{}{}'.format(work_dir, filename, '.txt') # 得到文件的绝对/相对路径
+    file_name = '{}{}{}'.format(work_dir, filename, '.txt')
     file = open(file_name, mode='r')
     word1 = ':'
     word2 = '：'
+    word3 = '版权'
     str1 = ''
     for line in file:
-        if (not word1 in line) and (not word2 in line):
+        if (not word1 in line) and (not word2 in line) and (not word3 in line):
             str1 = '{}{}'.format(str1, line)
     # str1 = file.read()
     file.close()
@@ -54,5 +55,4 @@ def chineseornot(filename):
         return False
 
 
-if __name__ == "__main__":
-    print(chineseornot('33894312'))
+
