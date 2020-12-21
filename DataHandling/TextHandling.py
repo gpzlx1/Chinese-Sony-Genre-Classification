@@ -1,4 +1,5 @@
-import sys
+import sys 
+from imp import reload
 import re
 import os
 import multiprocessing
@@ -77,7 +78,7 @@ def chinese_or_not(str1):
         return False
 
 
-def data_handling(file_name):    
+def data_handling(file_name):
     try:
         str1 = text_handling(file_name)
         if chinese_or_not(str1):
