@@ -2,6 +2,7 @@ import os
 import numpy as np
 from shutil import copyfile
 import queue
+import re
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -84,26 +85,28 @@ def get_unique_song(song_path_list : list):
     final_result = [song_path_list[k] for k in keep]
     return final_result
 
-def store_unique_songs(unique_songs, out_directory):
+def store_unique_songs(unique_songs, out_dir):
     for p in unique_songs:
         song_name = p.split('/')[-1]
-        out_path = os.path.join(out_directory, song_name)
+        out_path = os.path.join(out_dir, song_name)
         copyfile(p, out_path)
 
-def main():
-    
-    target_dir = "/mnt/c/Users/gpzlx1/Desktop/netease/preprocessed_data/rap-songs"
-    out_directory = '/mnt/c/Users/gpzlx1/Desktop/netease/data/rap-songs'
-    os.system('rm -r {}'.format(out_directory))
-    os.system('mkdir {}'.format(out_directory))
-    
-    reduce_paths = list_compare_dict(target_dir)
-    total = len(reduce_paths)
-    print("find song num: {}".format(total))
-    unique_song_paths = get_unique_song(reduce_paths)
 
-    print("left", len(unique_song_paths))
-    store_unique_songs(unique_song_paths, out_directory)
+def main():    
+    song_types = ["ancient-songs", "ballad-songs", "rap-songs", "rock-songs"]
+    for song_type in song_types:
+        target_dir = "/mnt/c/Users/gpzlx1/Desktop/netease/preprocessed_data/" + song_type
+        out_dir = re.sub('preprocessed_data', 'preprocessed_dedup_data', target_dir)
+        os.system('rm -r {}'.format(out_dir))
+        os.system('mkdir {}'.format(out_dir))
+
+        reduce_paths = list_compare_dict(target_dir)
+        total = len(reduce_paths)
+        print("find song num: {}".format(total))
+        unique_song_paths = get_unique_song(reduce_paths)
+
+        print("left", len(unique_song_paths))
+        store_unique_songs(unique_song_paths, out_dir)
 
         
 if __name__ == "__main__":
