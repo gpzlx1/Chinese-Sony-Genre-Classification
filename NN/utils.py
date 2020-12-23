@@ -134,7 +134,7 @@ def build_dataset(train_paths, val_paths, cache_dir):
     print(f"Vocab size: {len(vocab)}")
 
 
-    def _load_dataset(dataset_list, pad_size=300):
+    def _load_dataset(dataset_list, pad_size=250):
         if dataset_list is None:
             dataset_list = []
         contents  = []
