@@ -69,9 +69,7 @@ def build_vocab(train_dataset, val_dataset, tokennizer, max_size, min_freq):
 
 class DatasetIterater(object):
     def __init__(self, batches, batch_size, device):
-        import random 
         self.batch_size = batch_size
-        random.shuffle(batches)
         self.batches = batches
         self.n_batches = len(batches) // batch_size
         self.residue = False  # 记录batch数量是否为整数
@@ -105,6 +103,8 @@ class DatasetIterater(object):
             return batches
 
     def __iter__(self):
+        import random 
+        random.shuffle(self.batches)
         return self
 
     def __len__(self):
