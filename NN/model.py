@@ -81,7 +81,7 @@ class FastText(nn.Module):
         x_word = self.embedding(x[0])
         x_bigram = self.embedding_ngram2(x[2])
         x_trigram = self.embedding_ngram3(x[3])
-        x = torch.cat((x_word, x_bigram, x_trigram))
+        x = torch.cat((x_word, x_bigram, x_trigram), -1)
         #run
         x = x.mean(dim=1)
         x = self.dropout(x)

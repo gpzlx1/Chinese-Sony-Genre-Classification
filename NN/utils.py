@@ -118,7 +118,7 @@ class DatasetIterater(object):
 
     
 
-def build_dataset(train_paths, val_paths, word_level=False):
+def build_dataset(train_paths, val_paths, word_level=False, pad_size=100):
     if word_level:
         tokenizer = lambda x: x.split(' ')  # 以空格隔开，word-level
     else:
@@ -134,7 +134,7 @@ def build_dataset(train_paths, val_paths, word_level=False):
     print(f"Vocab size: {len(vocab)}")
 
 
-    def _load_dataset(dataset_list, pad_size=250):
+    def _load_dataset(dataset_list, pad_size):
         if dataset_list is None:
             dataset_list = []
         contents  = []
@@ -160,8 +160,8 @@ def build_dataset(train_paths, val_paths, word_level=False):
 
 
 
-    train = _load_dataset(train)
-    val = _load_dataset(val)
+    train = _load_dataset(train, pad_size)
+    val = _load_dataset(val, pad_size)
 
     return vocab, train, val
 

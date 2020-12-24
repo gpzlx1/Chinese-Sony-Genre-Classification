@@ -2,7 +2,8 @@ import time
 import torch
 import torch.nn.functional as F
 import numpy as np
-from utils import build_dataset, DatasetIterater
+#from utils import build_dataset, DatasetIterater
+from utils_fasttext import build_dataset, DatasetIterater
 from model import FastText, TextCNN
 from sklearn import metrics
 import argparse
@@ -14,8 +15,9 @@ import argparse
 #args = parser.parse_args()
 
 
-
-
+device = 'cpu'
+if torch.cuda.is_available():
+    device = 'cuda'
 
 
 def train(model, train_iter, num_epochs=20):
@@ -34,6 +36,7 @@ def train(model, train_iter, num_epochs=20):
             optimizer.step()
             if total_batch % 100 == 0:
                 predic = torch.max(outputs.data, 1)[1].cpu()
+                labels = labels.data.cpu().numpy()
                 train_acc = metrics.accuracy_score(labels, predic)
                 
                 msg = 'Iter: {0:>6},  Train Loss: {1:>5.2},  Train Acc: {2:>6.2%}'
@@ -79,12 +82,12 @@ if __name__ == '__main__':
         './split-data/data/SPLIT/test/rock-test.txt'
     ]
 
-    device = 'cpu'
     batch_size = 64
-    vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, 'cache')
+    vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, word_level=True, pad_size=100)
     train_iter = DatasetIterater(train_dataset, batch_size, device)
     val_iter = DatasetIterater(val_dataset, batch_size, device)
-    model = TextCNN(batch_size, 4, len(vocab), 300, None)
+    #model = TextCNN(batch_size, 4, len(vocab), 300, None).to(device)
+    model = FastText(batch_size, 4, len(vocab), 300, None).to(device)
     #_, _, report, confusion =  evaluate(model, val_iter, test=True)
     #print(report)
     #print(confusion)

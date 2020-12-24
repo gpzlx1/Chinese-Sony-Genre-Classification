@@ -11,7 +11,7 @@ MAX_VOCAB_SIZE = 10000  # 词表长度限制
 UNK, PAD = '<UNK>', '<PAD>'  # 未知字，padding符号
 
 
-def build_dataset(train_paths, val_paths, word_level=False):
+def build_dataset(train_paths, val_paths, word_level=False, pad_size=100):
 
     if word_level:
         tokenizer = lambda x: x.split(' ')  # 以空格隔开，word-level
@@ -37,7 +37,7 @@ def build_dataset(train_paths, val_paths, word_level=False):
         t2 = sequence[t - 2] if t - 2 >= 0 else 0
         return (t2 * 14918087 * 18408749 + t1 * 14918087) % buckets
 
-    def _load_dataset(dataset_list, pad_size=250):
+    def _load_dataset(dataset_list, pad_size):
         if dataset_list is None:
             dataset_list = []
         contents = []
@@ -71,8 +71,8 @@ def build_dataset(train_paths, val_paths, word_level=False):
         return contents
         
 
-    train = _load_dataset(train)
-    val = _load_dataset(val)
+    train = _load_dataset(train, pad_size)
+    val = _load_dataset(val, pad_size)
 
     return vocab, train, val
 
