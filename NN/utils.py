@@ -9,7 +9,7 @@ import torch
 MAX_VOCAB_SIZE = 10000  # 词表长度限制
 UNK, PAD = '<UNK>', '<PAD>'  # 未知字，padding符号
 
-def read_process_dataset(train_dataset_paths, val_dataset_paths):
+def read_process_dataset(train_dataset_paths, val_dataset_paths, word_level=False):
     if train_dataset_paths is None:
         train_dataset_paths = []
     if val_dataset_paths is None:
@@ -21,7 +21,10 @@ def read_process_dataset(train_dataset_paths, val_dataset_paths):
         with open(p, 'r') as f:
             songs = f.read()
 
-        songs = re.sub('[ ]+', '', songs)
+        if word_level:
+            songs = re.sub('[ ]+', ' ', songs)
+        else:
+            songs = re.sub('[ ]+', '', songs)
 
         songs = songs.split('\n')
         train.append(songs)
@@ -31,7 +34,10 @@ def read_process_dataset(train_dataset_paths, val_dataset_paths):
         with open(p, 'r') as f:
             songs = f.read()
 
-        songs = re.sub('[ ]+', '', songs)
+        if word_level:
+            songs = re.sub('[ ]+', ' ', songs)
+        else:
+            songs = re.sub('[ ]+', '', songs)
 
         songs = songs.split('\n')
         val.append(songs)
@@ -112,22 +118,19 @@ class DatasetIterater(object):
 
     
 
-def build_dataset(train_paths, val_paths, cache_dir):
-    tokenizer = tokenizer = lambda x: [y for y in x]
-    cache_vocab_path = cache_dir + '/vocab.pickle.bin'
-    cache_train_path = cache_dir + '/train.pickle.bin'
-    cache_val_path = cache_dir + '/val.pickle.bin'
+def build_dataset(train_paths, val_paths, word_level=False):
+    if word_level:
+        tokenizer = lambda x: x.split(' ')  # 以空格隔开，word-level
+    else:
+        tokenizer = lambda x: [y for y in x]  # char-level
 
     vocab = None
     train = None
     val = None
 
-    if os.path.exists(cache_vocab_path):
-        vocab = pkl.load(open(cache_vocab_path, 'rb'))
-    else:
-        train, val = read_process_dataset(train_paths, val_paths)
-        vocab = build_vocab(train, tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
-        pkl.dump(vocab, open(cache_vocab_path, 'wb'))
+
+    train, val = read_process_dataset(train_paths, val_paths, word_level)
+    vocab = build_vocab(train, tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
     print(f"Vocab size: {len(vocab)}")
 
 
@@ -152,30 +155,13 @@ def build_dataset(train_paths, val_paths, cache_dir):
                 for word in token:
                     words_line.append(vocab.get(word, vocab.get(UNK)))
                 contents.append((words_line, int(index), seq_len))
-                random.shuffle(contents)
+        random.shuffle(contents)
         return contents
 
 
-    if os.path.exists(cache_train_path):
-        train = pkl.load(open(cache_train_path, 'rb'))
-    else:
-        if train is None:
-            print("dataset is out of time, please rm -r cache")
-            raise ValueError
-        else:
-            train = _load_dataset(train)
-            pkl.dump(train, open(cache_train_path, 'wb'))
 
-
-    if os.path.exists(cache_val_path):
-        val = pkl.load(open(cache_val_path, 'rb'))
-    else:
-        if val is None:
-            print("dataset is out of time, please rm -r cache")
-            raise ValueError
-        else:
-            val = _load_dataset(val)
-            pkl.dump(val, open(cache_val_path, 'wb'))
+    train = _load_dataset(train)
+    val = _load_dataset(val)
 
     return vocab, train, val
 
@@ -189,7 +175,7 @@ if __name__ == "__main__":
         '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/train/rap.txt',
         '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/train/rock.txt'
     ]
-    vocab, train, val = build_dataset(paths, None, 'cache')
+    vocab, train, val = build_dataset(paths, None, 'cache', True)
     for i in DatasetIterater(train, 32, 'cpu'):
         print(i)
         break
