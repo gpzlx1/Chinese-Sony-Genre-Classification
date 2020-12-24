@@ -11,6 +11,7 @@ parser.add_argument('--word', default=False, type=bool, help='True for word, Fal
 parser.add_argument('--batch-size', default=64, type=int, help='Using how many GPU to train')
 parser.add_argument('--epochs', default=50, type=int, help='train epochs')
 parser.add_argument('--lr', default=0.0001, type=float, help='learning rate')
+parser.add_argument('--balance', default=False, type=bool, help='balance train dataset')
 args = parser.parse_args()
 
 
@@ -45,7 +46,7 @@ if args.word:
     pad_size = 110
 else:
     pad_size = 220
-vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, word_level=args.word, pad_size=pad_size, balance=True)
+vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, word_level=args.word, pad_size=pad_size, balance=args.balance)
 
 
 model = FastText(args.batch_size, 4, len(vocab), 300, None) if args.model == 'FastText' else TextCNN(args.batch_size, 4, len(vocab), 300, None)
