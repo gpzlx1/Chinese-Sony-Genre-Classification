@@ -10,7 +10,7 @@ parser.add_argument('--model', type=str, required=True, help='choose a model: Te
 parser.add_argument('--word', default=False, type=bool, help='True for word, False for char')
 parser.add_argument('--batch-size', default=64, type=int, help='Using how many GPU to train')
 parser.add_argument('--epochs', default=50, type=int, help='train epochs')
-parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
+parser.add_argument('--lr', default=0.0001, type=float, help='learning rate')
 args = parser.parse_args()
 
 
@@ -41,8 +41,11 @@ val_paths = [
     './split-data/data/SPLIT/test/rock-test.txt'
 ]
 
-
-vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, word_level=args.word, pad_size=200)
+if args.word:
+    pad_size = 110
+else:
+    pad_size = 220
+vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, word_level=args.word, pad_size=pad_size, balance=True)
 
 
 model = FastText(args.batch_size, 4, len(vocab), 300, None) if args.model == 'FastText' else TextCNN(args.batch_size, 4, len(vocab), 300, None)
@@ -54,7 +57,6 @@ val_iter = DatasetIterater(val_dataset, args.batch_size, device)
 
 for c_epoch in range(args.epochs):
     print("Epoch {}/{}".format(c_epoch, args.epochs))
-    adjust_learning_rate(optimizer, c_epoch, args.lr)
     train_one_epoch(model, train_iter, optimizer)
     acc, loss, report, confusion = evaluate(model, val_iter, True)
     print(acc, loss)

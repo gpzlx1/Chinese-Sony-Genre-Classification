@@ -7,11 +7,11 @@ import pickle as pkl
 
 from utils import read_process_dataset, build_vocab
 
-MAX_VOCAB_SIZE = 10000  # 词表长度限制
+MAX_VOCAB_SIZE = 100000  # 词表长度限制
 UNK, PAD = '<UNK>', '<PAD>'  # 未知字，padding符号
 
 
-def build_dataset(train_paths, val_paths, word_level=False, pad_size=100):
+def build_dataset(train_paths, val_paths, word_level=False, pad_size=100, balance=False):
 
     if word_level:
         tokenizer = lambda x: x.split(' ')  # 以空格隔开，word-level
@@ -23,7 +23,7 @@ def build_dataset(train_paths, val_paths, word_level=False, pad_size=100):
     val = None
 
     
-    train, val = read_process_dataset(train_paths, val_paths, word_level)
+    train, val = read_process_dataset(train_paths, val_paths, word_level, balance)
     vocab = build_vocab(train, tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
     print(f"Vocab size: {len(vocab)}")
 
