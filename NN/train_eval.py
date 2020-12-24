@@ -3,7 +3,15 @@ from sklearn import metrics
 import torch.nn.functional as F
 import numpy as np
 
-def train_one_epoch(model, train_iter, optimizer, hvd_rank):
+def adjust_learning_rate(optimizer, epoch, lr):
+    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
+    lr = lr * (0.1 ** (epoch // 10))
+    print(lr)
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+        
+        
+def train_one_epoch(model, train_iter, optimizer):
     model.train()
     total_batch = 0
 
@@ -13,7 +21,7 @@ def train_one_epoch(model, train_iter, optimizer, hvd_rank):
         loss = F.cross_entropy(outputs, labels)
         loss.backward()
         optimizer.step()
-        if total_batch % 100 == 0 and hvd_rank == 0:
+        if total_batch % 100 == 0:
             predic = torch.max(outputs.data, 1)[1].cpu()
             labels = labels.data.cpu().numpy()
             train_acc = metrics.accuracy_score(labels, predic)

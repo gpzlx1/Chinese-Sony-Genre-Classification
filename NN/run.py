@@ -2,15 +2,15 @@ import time
 import torch
 import numpy as np
 from model import FastText, TextCNN
-import horovod.torch as hvd
-from train_eval import train_one_epoch, evaluate
+from train_eval import train_one_epoch, evaluate, adjust_learning_rate
 import argparse
 
 parser = argparse.ArgumentParser(description='Chinese Text Classification')
 parser.add_argument('--model', type=str, required=True, help='choose a model: TextCNN, FastText')
 parser.add_argument('--word', default=False, type=bool, help='True for word, False for char')
 parser.add_argument('--batch-size', default=64, type=int, help='Using how many GPU to train')
-parser.add_argument('--epochs', default=30, type=int, help='train epochs')
+parser.add_argument('--epochs', default=50, type=int, help='train epochs')
+parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
 args = parser.parse_args()
 
 
@@ -22,11 +22,8 @@ else:
     from utils import build_dataset, DatasetIterater
 
 
-hvd.init()
-
 device = 'cpu'
 if torch.cuda.is_available():
-    torch.cuda.set_device(hvd.rank())
     device = 'cuda'
 
 
@@ -45,31 +42,24 @@ val_paths = [
 ]
 
 
-vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, word_level=args.word, pad_size=100)
+vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, word_level=args.word, pad_size=200)
 
 
-model = FastText(args.batch_size, 4, len(vocab), 300, None) if args.model == 'FastText' else TextCNN(args.batch_size, 3, len(vocab), 300, None)
+model = FastText(args.batch_size, 4, len(vocab), 300, None) if args.model == 'FastText' else TextCNN(args.batch_size, 4, len(vocab), 300, None)
 model.to(device)
 
-optimizer = torch.optim.SGD(model.parameters(), lr=0.01, weight_decay=1.2e-6)
-optimizer = hvd.DistributedOptimizer(
-    optimizer=optimizer, \
-    named_parameters=model.named_parameters(),
-    backward_passes_per_step=1
-)
-hvd.broadcast_parameters(model.state_dict(), root_rank=0)
-hvd.broadcast_optimizer_state(optimizer, root_rank=0)
-
+optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 train_iter = DatasetIterater(train_dataset, args.batch_size, device)
 val_iter = DatasetIterater(val_dataset, args.batch_size, device)
 
-for i in range(args.epochs):
-    train_one_epoch(model, train_iter, optimizer, hvd.rank())
-    if hvd.rank() == 0:
-        acc, loss, report, confusion = evaluate(model, val_iter, True)
-        print(acc, loss)
-        print(report)
-        print(confusion)
+for c_epoch in range(args.epochs):
+    print("Epoch {}/{}".format(c_epoch, args.epochs))
+    adjust_learning_rate(optimizer, c_epoch, args.lr)
+    train_one_epoch(model, train_iter, optimizer)
+    acc, loss, report, confusion = evaluate(model, val_iter, True)
+    print(acc, loss)
+    print(report)
+    print(confusion)
 
 
 
