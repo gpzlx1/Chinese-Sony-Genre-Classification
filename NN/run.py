@@ -67,16 +67,16 @@ def evaluate(model, data_iter, test=False):
 if __name__ == '__main__':
 
     train_paths = [
-        '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/train/ancient.txt', 
-        '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/train/ballad.txt',
-        '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/train/rap.txt',
-        '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/train/rock.txt'
+        './split-data/data/SPLIT/train/ancient.txt', 
+        './split-data/data/SPLIT/train/ballad.txt',
+        './split-data/data/SPLIT/train/rap.txt',
+        './split-data/data/SPLIT/train/rock.txt'
     ]
     val_paths = [
-        '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/test/ancient-test.txt',
-        '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/test/ballad-test.txt',
-        '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/test/rap-test.txt',
-        '/mnt/c/Users/gpzlx/Desktop/netease/split-data/data/SPLIT/test/rock-test.txt'
+        './split-data/data/SPLIT/test/ancient-test.txt',
+        './split-data/data/SPLIT/test/ballad-test.txt',
+        './split-data/data/SPLIT/test/rap-test.txt',
+        './split-data/data/SPLIT/test/rock-test.txt'
     ]
 
     device = 'cpu'
