@@ -1,6 +1,7 @@
 import torch
 from sklearn import metrics
 import torch.nn.functional as F
+import numpy as np
 
 def train_one_epoch(model, train_iter, optimizer, hvd_rank):
     model.train()
