@@ -40,15 +40,12 @@ def read_process_dataset(train_dataset_paths, val_dataset_paths):
 
 
 
-def build_vocab(train_dataset, val_dataset, tokennizer, max_size, min_freq):
+def build_vocab(train_dataset, tokennizer, max_size, min_freq):
     vocab_dic = {}
     if train_dataset is None:
         train_dataset = []
 
-    if val_dataset is None:
-        val_dataset = []
-
-    dataset = train_dataset + val_dataset
+    dataset = train_dataset
     total_songs = sum([len(d) for d in dataset])
     print("total songs num:", total_songs)
 
@@ -129,7 +126,7 @@ def build_dataset(train_paths, val_paths, cache_dir):
         vocab = pkl.load(open(cache_vocab_path, 'rb'))
     else:
         train, val = read_process_dataset(train_paths, val_paths)
-        vocab = build_vocab(train, val, tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
+        vocab = build_vocab(train, tokenizer, max_size=MAX_VOCAB_SIZE, min_freq=1)
         pkl.dump(vocab, open(cache_vocab_path, 'wb'))
     print(f"Vocab size: {len(vocab)}")
 
@@ -178,7 +175,7 @@ def build_dataset(train_paths, val_paths, cache_dir):
             raise ValueError
         else:
             val = _load_dataset(val)
-            pkl.dump(train, open(cache_val_path, 'wb'))
+            pkl.dump(val, open(cache_val_path, 'wb'))
 
     return vocab, train, val
 

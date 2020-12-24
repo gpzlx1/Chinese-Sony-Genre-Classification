@@ -20,12 +20,12 @@ import argparse
 
 def train(model, train_iter, num_epochs=20):
     model.train()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
     total_batch = 0
 
     for epoch in range(num_epochs):
-        print('Epoch [{}/{}]'.format(epoch + 1, num_epochs))
+        
         for i, (trains, labels) in enumerate(train_iter):
             outputs = model(trains)
             model.zero_grad()
@@ -59,7 +59,7 @@ def evaluate(model, data_iter, test=False):
 
     acc = metrics.accuracy_score(labels_all, predict_all)
     if test:
-        report = metrics.classification_report(labels_all, predict_all, target_names=config.class_list, digits=4)
+        report = metrics.classification_report(labels_all, predict_all, target_names=['ancient', 'ballad', 'rap', 'rock'], digits=4)
         confusion = metrics.confusion_matrix(labels_all, predict_all)
         return acc, loss_total / len(data_iter), report, confusion
     return acc, loss_total / len(data_iter)
@@ -80,13 +80,18 @@ if __name__ == '__main__':
     ]
 
     device = 'cpu'
-    batch_size = 32
+    batch_size = 64
     vocab, train_dataset, val_dataset = build_dataset(train_paths, val_paths, 'cache')
     train_iter = DatasetIterater(train_dataset, batch_size, device)
     val_iter = DatasetIterater(val_dataset, batch_size, device)
     model = TextCNN(batch_size, 4, len(vocab), 300, None)
-    acc, loss = evaluate(model, train_iter)
-    print(acc, loss)
-    for i in range(10):
+    #_, _, report, confusion =  evaluate(model, val_iter, test=True)
+    #print(report)
+    #print(confusion)
+    num_epochs = 30
+    for epoch in range(num_epochs):
+        print('Epoch [{}/{}]'.format(epoch + 1, num_epochs))
         train(model, train_iter, num_epochs=1)
-        print(evaluate(model, train_iter))
+        _, _, report, confusion =  evaluate(model, val_iter, test=True)
+        print(report)
+        print(confusion)
