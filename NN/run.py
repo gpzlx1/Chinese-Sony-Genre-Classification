@@ -29,17 +29,17 @@ if torch.cuda.is_available():
 
 
 train_paths = [
-    './split-data/data/SPLIT/train/ancient.txt', 
-    './split-data/data/SPLIT/train/ballad.txt',
-    './split-data/data/SPLIT/train/rap.txt',
-    './split-data/data/SPLIT/train/rock.txt'
+    './data/train/ancient.txt', 
+    './data/train/ballad.txt',
+    './data/train/rap.txt',
+    './data/train/rock.txt'
 ]
 
 val_paths = [
-    './split-data/data/SPLIT/test/ancient-test.txt',
-    './split-data/data/SPLIT/test/ballad-test.txt',
-    './split-data/data/SPLIT/test/rap-test.txt',
-    './split-data/data/SPLIT/test/rock-test.txt'
+    './data/test/ancient-test.txt',
+    './data/test/ballad-test.txt',
+    './data/test/rap-test.txt',
+    './data/test/rock-test.txt'
 ]
 
 if args.word:
