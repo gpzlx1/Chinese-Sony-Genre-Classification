@@ -23,6 +23,6 @@ and run
 ```shell
 cd $PROJECT_ROOT
 
-python3 src/NN/demo.py
+python3 src/NotNN/demo.py
 ```
 
