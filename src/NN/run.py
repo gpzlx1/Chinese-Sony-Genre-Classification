@@ -7,8 +7,8 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Chinese Text Classification')
 parser.add_argument('--model', type=str, required=True, help='choose a model: TextCNN, FastText')
-parser.add_argument('--word', default=False, type=bool, help='True for word, False for char')
-parser.add_argument('--batch-size', default=64, type=int, help='Using how many GPU to train')
+parser.add_argument('--word', default=False, type=bool, help='true for word, false for char')
+parser.add_argument('--batch-size', default=64, type=int, help='batch size for training')
 parser.add_argument('--epochs', default=30, type=int, help='train epochs')
 parser.add_argument('--lr', default=0.0001, type=float, help='learning rate')
 parser.add_argument('--balance', default=False, type=bool, help='balance train dataset')

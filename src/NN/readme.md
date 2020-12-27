@@ -17,9 +17,9 @@ Chinese Text Classification
 optional arguments:
   -h, --help            show this help message and exit
   --model MODEL         choose a model: TextCNN, FastText
-  --word WORD           True for word, False for char
+  --word WORD           true for word, false for char
   --batch-size BATCH_SIZE
-                        Using how many GPU to train
+                        batch size for training
   --epochs EPOCHS       train epochs
   --lr LR               learning rate
   --balance BALANCE     balance train dataset
