@@ -13,13 +13,16 @@ def adjust_learning_rate(optimizer, epoch, lr):
 def train_one_epoch(model, train_iter, optimizer):
     model.train()
     total_batch = 0
-
+    preds = []
+    targets = []
     for i, (trains, labels) in enumerate(train_iter):
         outputs = model(trains)
         model.zero_grad()
         loss = F.cross_entropy(outputs, labels)
         loss.backward()
         optimizer.step()
+        preds.append(outputs)
+        targets.append(labels)
         if total_batch % 100 == 0:
             predic = torch.max(outputs.data, 1)[1].cpu()
             labels = labels.data.cpu().numpy()
@@ -30,6 +33,17 @@ def train_one_epoch(model, train_iter, optimizer):
 
             model.train()
         total_batch += 1
+    
+    p = np.array([], dtype=int)
+    t = np.array([], dtype=int)
+    for pre, tar in zip(preds, targets):
+        tar = tar.data.cpu().numpy()
+        pre = torch.max(pre.data, 1)[1].cpu().numpy()
+        p = np.append(p, pre)
+        t = np.append(t, tar)
+    acc = metrics.accuracy_score(t, p)
+    print("train acc",acc)
+        
 
 def evaluate(model, data_iter, test=False):
     model.eval()
