@@ -21,8 +21,8 @@ if __name__ == "__main__":
 ```
 and run
 ```shell
-cd $PROJECT_ROOT
+cd $PROJECT_ROOT/src/NN
 
-python3 src/NN/demo.py
+python3 demo.py
 ```
 
