@@ -7,7 +7,7 @@ import numpy as np
 
       
 class TextCNN(nn.Module):
-    def __init__(self, batch_size, num_classes, embedding_size, embedding_pretrained):
+    def __init__(self, batch_size, num_classes, embedding_size, embedding_dim, embedding_pretrained):
         super(TextCNN, self).__init__()
         if embedding_pretrained is not None:
             self.embedding = nn.Embedding.from_pretrained(
@@ -15,17 +15,16 @@ class TextCNN(nn.Module):
                 freeze=True
             )
         else:
-            print("only support use pretrained embedding layer")
-            raise ValueError
+            self.embedding = nn.Embedding(embedding_size, embedding_dim)
 
         self.filter_sizes = (2, 3 ,4)
         self.num_filters = 256
-        self.embedding_size = embedding_size
+        self.embedding_dim = embedding_dim
         self.dropout_rate = 0.5
         self.num_classes = num_classes
 
         self.convs = nn.ModuleList(
-            [nn.Conv2d(1, self.num_filters, (k, embedding_size)) for k in self.filter_sizes]
+            [nn.Conv2d(1, self.num_filters, (k, embedding_dim)) for k in self.filter_sizes]
         )
         self.dropout = nn.Dropout(self.dropout_rate)
         self.fc = nn.Linear(
@@ -51,7 +50,7 @@ class TextCNN(nn.Module):
         return out
 
 class FastText(nn.Module):
-    def __init__(self, batch_size, num_classes, embedding_size, embedding_pretrained):
+    def __init__(self, batch_size, num_classes, embedding_size, embedding_dim, embedding_pretrained):
         super(FastText, self).__init__()
         if embedding_pretrained is not None:
             self.embedding = nn.Embedding.from_pretrained(
@@ -59,12 +58,11 @@ class FastText(nn.Module):
                 freeze=True
             )
         else:
-            print("only support use pretrained embedding layer")
-            raise ValueError
+            self.embedding = nn.Embedding(embedding_size, embedding_dim)
 
         self.filter_sizes = (2, 3 ,4)
         self.num_filters = 256
-        self.embedding_size = embedding_size
+        self.embedding_dim = embedding_dim
         self.dropout_rate = 0.5
         self.num_classes = num_classes
         self.hidden_size = 256
@@ -72,10 +70,10 @@ class FastText(nn.Module):
         # problem?
         self.n_gram_vocab = 250499
         
-        self.embedding_ngram2 = nn.Embedding(self.n_gram_vocab, self.embedding_size)
-        self.embedding_ngram3 = nn.Embedding(self.n_gram_vocab, self.embedding_size)
+        self.embedding_ngram2 = nn.Embedding(self.n_gram_vocab, self.embedding_dim)
+        self.embedding_ngram3 = nn.Embedding(self.n_gram_vocab, self.embedding_dim)
         self.dropout = nn.Dropout(self.dropout_rate)
-        self.fc1 = nn.Linear(self.embedding_size * 3, self.hidden_size)
+        self.fc1 = nn.Linear(self.embedding_dim * 3, self.hidden_size)
         self.fc2 = nn.Linear(self.hidden_size, self.num_classes)
 
     def forward(self, x):
@@ -83,7 +81,7 @@ class FastText(nn.Module):
         x_word = self.embedding(x[0])
         x_bigram = self.embedding_ngram2(x[2])
         x_trigram = self.embedding_ngram3(x[3])
-        x = torch.cat((x_word, x_bigram, x_trigram))
+        x = torch.cat((x_word, x_bigram, x_trigram), -1)
         #run
         x = x.mean(dim=1)
         x = self.dropout(x)
