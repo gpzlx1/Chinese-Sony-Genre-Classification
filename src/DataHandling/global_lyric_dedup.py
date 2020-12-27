@@ -5,6 +5,17 @@ import queue
 import re
 from sklearn.metrics.pairwise import cosine_similarity
 
+import argparse
+
+parser = argparse.ArgumentParser(description='Lyrics data clean')
+parser.add_argument('--src-dir', default=str, required=True, help='the source directory')
+parser.add_argument('--dst-dir', default=str, required=True, help='where to store results (directory)')
+args = parser.parse_args()
+
+target_dir_path = args.src_dir
+out_dir_parent = args.dst_dir
+os.system('mkdir {}'.format(out_dir_parent))
+
 
 def list_compare_dict(target_dir):
     target_dir = os.path.abspath(target_dir)
@@ -93,20 +104,12 @@ def store_unique_songs(unique_songs, out_dir):
 
 
 def main():    
-    song_types = ["ancient-songs", "ballad-songs", "rap-songs", "rock-songs"]
-    for song_type in song_types:
-        target_dir = "/mnt/c/Users/gpzlx1/Desktop/netease/preprocessed_data/" + song_type
-        out_dir = re.sub('preprocessed_data', 'preprocessed_dedup_data', target_dir)
-        os.system('rm -r {}'.format(out_dir))
-        os.system('mkdir {}'.format(out_dir))
-
-        reduce_paths = list_compare_dict(target_dir)
-        total = len(reduce_paths)
-        print("find song num: {}".format(total))
-        unique_song_paths = get_unique_song(reduce_paths)
-
-        print("left", len(unique_song_paths))
-        store_unique_songs(unique_song_paths, out_dir)
+    reduce_paths = list_compare_dict(target_dir_path)
+    total = len(reduce_paths)
+    print("find song num: {}".format(total))
+    unique_song_paths = get_unique_song(reduce_paths)
+    print("left", len(unique_song_paths))
+    store_unique_songs(unique_song_paths, out_dir_parent)
 
         
 if __name__ == "__main__":
