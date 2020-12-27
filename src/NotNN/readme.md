@@ -11,4 +11,9 @@ if __name__ == "__main__":
     # LR_predict_word()
     pass
 ```
+and run
+```shell
+cd $PROJECT_ROOT
 
+python3 src/NN/demo.py
+```
