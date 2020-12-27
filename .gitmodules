@@ -1,0 +1,3 @@
+[submodule "submodule/Netease-lyrics-spider"]
+	path = submodule/Netease-lyrics-spider
+	url = git@github.com:gpzlx1/Netease-lyrics-spider.git
