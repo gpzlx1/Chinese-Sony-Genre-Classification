@@ -1,7 +1,7 @@
 # Chinese-Sony-Genre-Classification
 Predict Music Sony From Lyrics For Chinese Sonys
 
-### Dataset
+## Dataset
 In this repo, we offer the **chinese** songs dataset crawled from the Netease Music, and label them into 4 classes:
 * Rock & Roll (摇滚)
 * Rap (说唱)
@@ -10,7 +10,7 @@ In this repo, we offer the **chinese** songs dataset crawled from the Netease Mu
 
 Check details in `$PROJECT_ROOT/data`
 
-### implementation
+## Implementation
 We also implemented several NLP models to classify Chinese songs. 
 * Based on the Neural Networks(details in `$PROJECT_ROOT/src/NN`): 
   * TextCNN, 
