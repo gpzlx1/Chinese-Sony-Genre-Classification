@@ -7,9 +7,17 @@ from Cat_to_Chs import *
 
 WORK_NUM = 4
 
-target_dir_path = "/mnt/c/Users/gpzlx1/Desktop/netease/data/rock-songs"
-out_dir_parent = re.sub('data', 'preprocessed_data', target_dir_path)
-os.system('rm -r {}'.format(out_dir_parent))
+import argparse
+
+
+parser = argparse.ArgumentParser(description='Lyrics data clean')
+parser.add_argument('--src-dir', default=str, required=True, help='the source directory')
+parser.add_argument('--dst-dir', default=str, required=True, help='where to store results (directory)')
+args = parser.parse_args()
+
+
+target_dir_path = args.src_dir
+out_dir_parent = args.dst_dir
 os.system('mkdir {}'.format(out_dir_parent))
 
 
