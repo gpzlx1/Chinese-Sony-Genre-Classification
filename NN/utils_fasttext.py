@@ -36,6 +36,14 @@ def build_dataset(train_paths, val_paths, word_level=False, pad_size=100, balanc
         t1 = sequence[t - 1] if t - 1 >= 0 else 0
         t2 = sequence[t - 2] if t - 2 >= 0 else 0
         return (t2 * 14918087 * 18408749 + t1 * 14918087) % buckets
+    
+    def tetraGramHash(sequence, t, buckets):
+        t1 = sequence[t - 1] if t - 1 >= 0 else 0
+        t2 = sequence[t - 2] if t - 2 >= 0 else 0
+        t3 = sequence[t - 3] if t - 3 >= 0 else 0
+        return (t3 * 14918087 * 18408749 * 19990726 + t2 * 14918087 * 18408749 + t1 * 14918087) % buckets
+        
+        
 
     def _load_dataset(dataset_list, pad_size):
         if dataset_list is None:
@@ -61,12 +69,15 @@ def build_dataset(train_paths, val_paths, word_level=False, pad_size=100, balanc
                 buckets = 250499
                 bigram = []
                 trigram = []
+                tetraGram = []
                 # ngram
                 for i in range(pad_size):
                     bigram.append(biGramHash(words_line, i, buckets))
                     trigram.append(triGramHash(words_line, i, buckets))
+                    tetraGram.append(tetraGramHash(words_line, i, buckets))
+                    
 
-                contents.append((words_line, int(index), seq_len, bigram, trigram))
+                contents.append((words_line, int(index), seq_len, bigram, trigram, tetraGram))
         random.shuffle(contents)
         return contents
         
@@ -93,9 +104,10 @@ class DatasetIterater(object):
         y = torch.LongTensor([_[1] for _ in datas]).to(self.device)
         bigram = torch.LongTensor([_[3] for _ in datas]).to(self.device)
         trigram = torch.LongTensor([_[4] for _ in datas]).to(self.device)
+        tetragram = torch.LongTensor([_[5] for _ in datas]).to(self.device)
         seq_len = torch.LongTensor([_[2] for _ in datas]).to(self.device)
 
-        return (x, seq_len, bigram, trigram), y
+        return (x, seq_len, bigram, trigram, tetragram), y
 
     def __next__(self):
         if self.residue and self.index == self.n_batches:

@@ -72,8 +72,9 @@ class FastText(nn.Module):
         
         self.embedding_ngram2 = nn.Embedding(self.n_gram_vocab, self.embedding_dim)
         self.embedding_ngram3 = nn.Embedding(self.n_gram_vocab, self.embedding_dim)
+        self.embedding_ngram4 = nn.Embedding(self.n_gram_vocab, self.embedding_dim)
         self.dropout = nn.Dropout(self.dropout_rate)
-        self.fc1 = nn.Linear(self.embedding_dim * 3, self.hidden_size)
+        self.fc1 = nn.Linear(self.embedding_dim * 4, self.hidden_size)
         self.fc2 = nn.Linear(self.hidden_size, self.num_classes)
 
     def forward(self, x):
@@ -81,7 +82,8 @@ class FastText(nn.Module):
         x_word = self.embedding(x[0])
         x_bigram = self.embedding_ngram2(x[2])
         x_trigram = self.embedding_ngram3(x[3])
-        x = torch.cat((x_word, x_bigram, x_trigram), -1)
+        x_tetragram = self.embedding_ngram4(x[4])
+        x = torch.cat((x_word, x_bigram, x_trigram, x_tetragram), -1)
         #run
         x = x.mean(dim=1)
         x = self.dropout(x)
