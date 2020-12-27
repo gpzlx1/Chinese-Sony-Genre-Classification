@@ -87,13 +87,6 @@ def LR_predict():
     print(mat, acc)
     utils.plot_confusion(mat, labels, "Random Forests - test")
 
-
-def plot():
-    mat = np.eye(4)
-    name = ['1', '2', '3', '4']
-    utils.plot_confusion(mat, name)
-
-
 def NB_predict_word():
     from model import NaiveBayes
     datas, test_datas, vocab, labels = load_data_all()
@@ -147,11 +140,10 @@ def LR_predict_word():
 
 
 if __name__ == "__main__":
-    # NB_predict()
-    # w2vector()
-    LR_predict()
-    # RF_predict()
-    # plot()
+    # NB_predict() # Naive Bayes with tokens
+    # RF_predict() # Random Forests with tokens
+    # LR_predict() # Logistic Regression with tokens
     # NB_predict_word()
-    # RF_predict_word()
+    RF_predict_word()
     # LR_predict_word()
+    pass
