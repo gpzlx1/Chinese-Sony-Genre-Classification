@@ -2,7 +2,7 @@ import world
 import jieba
 import numpy as np
 from tqdm import tqdm
-from multiprocessing import Lock
+import matplotlib.pyplot as plt
 from os.path import join, isdir
 from os import listdir
 
@@ -68,7 +68,7 @@ def merge2one(avaliable_paths=label_paths,
             not_token = [r[1] for r in results]
             results = [r[0] for r in results]
 
-            train_num = int(len(results)*ratio)
+            train_num = len(results) - 1000
 
             train_lyc = '\n'.join(results[:train_num])
             test_lyc = '\n'.join(results[train_num:])
@@ -140,9 +140,83 @@ def count_freq(vocab, *labels):
                     freq[w_index, i] += 1
     return freq, index, reverse_index
 
+def load_data():
+    labels = ['ancient', 'ballad', 'rap', 'rock']
+    corpus = [
+        join(join(world.DATA, 'train'), f"{name}.txt") for name in labels
+    ]
+    corpus_test = [
+        join(join(world.DATA, 'test'), f"{name}-test.txt") for name in labels
+    ]
+    datas = []
+    for c in corpus:
+        with open(c, 'r') as f:
+            data = f.readlines()
+            data = [d.split() for d in data]
+        datas.append(data)
+
+    test_datas = []
+    for c in corpus_test:
+        with open(c, 'r') as f:
+            data = f.readlines()
+            data = [d.split() for d in data]
+        test_datas.append(data)
+    vocab = get_vocab(*datas)
+    # with open('vocab.txt', 'w') as f:
+    #     v_w = list(vocab)
+    #     v_w = '\n'.join(v_w)
+    #     f.writelines(v_w)
+    with open('vocab.txt', 'r') as f:
+        vocab = f.readlines()
+        vocab = [v.strip() for v in vocab]
+        vocab = set(vocab)
+    vocab = vocab
+    return datas, test_datas, vocab, labels
+
+
+def load_data_all():
+    labels = ['ancient', 'ballad', 'rap', 'rock']
+    corpus = [
+        join(join(world.DATA, 'train'), f"{name}-all.txt") for name in labels
+    ]
+    corpus_test = [
+        join(join(world.DATA, 'test'), f"{name}-all-test.txt") for name in labels
+    ]
+    datas = []
+    for c in corpus:
+        with open(c, 'r') as f:
+            data = f.readlines()
+            data = [d.split("%%%") for d in data]
+        datas.append(data)
+
+    test_datas = []
+    for c in corpus_test:
+        with open(c, 'r') as f:
+            data = f.readlines()
+            data = [d.split("%%%") for d in data]
+        test_datas.append(data)
+    datas = parse2word(datas)
+    test_datas = parse2word(test_datas)
+    vocab = get_vocab(*datas)
+    # with open('vocab.txt', 'w') as f:
+    #     v_w = list(vocab)
+    #     v_w = '\n'.join(v_w)
+    #     f.writelines(v_w)
+    # with open('vocab.txt', 'r') as f:
+    #     vocab = f.readlines()
+    #     vocab = [v.strip() for v in vocab]
+    #     vocab = set(vocab)
+    vocab = vocab
+    return datas, test_datas, vocab, labels
+
+def parse2word(datas):
+    for i in range(len(datas)):
+        new_data = [' '.join(song) for song in datas[i]]
+        new_data = [list(song) for song in new_data]
+        datas[i] = new_data
+    return datas
 
 if __name__ == "__main__":
-    merge2one(avaliable_paths=['../data/rock-songs'],
-              name="rock",
+    merge2one(avaliable_paths=['../data/ancient-songs'],
+              name="ancient",
               split=0.7)
-    # pass
