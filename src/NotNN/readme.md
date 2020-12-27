@@ -1,3 +1,11 @@
+To install the dependencies, run
+
+```shell
+pip3 install -r requirements.txt
+```
+
+
+
 To get the performence of different models, remove the comments for them in `demo.py`
 
 ```python
@@ -17,3 +25,4 @@ cd $PROJECT_ROOT
 
 python3 src/NN/demo.py
 ```
+
